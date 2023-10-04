@@ -15,16 +15,5 @@
 add_vpp_plugin(example_plugin
   SOURCES
   example_plugin.c
-  node.c
-  example_plugin_periodic.c
   example_plugin.h
-
-  MULTIARCH_SOURCES
-  node.c
-
-  API_FILES
-  example_plugin.api
-
-  API_TEST_SOURCES
-  example_plugin_test.c
 )
