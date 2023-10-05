@@ -29,11 +29,14 @@ example_plugin_command_fn (vlib_main_t * vm,
                                    unformat_input_t * input,
                                    vlib_cli_command_t * cmd)
 {
-  if (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
-      return clib_error_return (0, "Syntax error");
+    u8* str;
+    if (!unformat (input, "%s", &str))
+        return clib_error_return (0, "Syntax error");
 
-  vlib_cli_output (vm, "Hello world!");
+    if (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
+        return clib_error_return (0, "Syntax error");
 
+  vlib_cli_output (vm, "Hello world! (%s)", str);
   return 0;
 }
 
