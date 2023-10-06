@@ -19,7 +19,6 @@
 #include <example_plugin/example_plugin.h>
 
 #include <vnet/ip/ip_format_fns.h>
-#include <vnet/ip/ip4_packet.h>
 
 #include <vpp/app/version.h>
 
@@ -45,6 +44,10 @@ example_plugin_command_fn (vlib_main_t * vm,
 
     if (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
         return clib_error_return (0, "Syntax error");
+
+    example_plugin_main.str = str;
+    example_plugin_main.ip_addr_set = ip_addr_set;
+    example_plugin_main.ip_addr = ip_addr;
 
     result = format(0, "Hello world! (%s)", str);
     if (ip_addr_set)

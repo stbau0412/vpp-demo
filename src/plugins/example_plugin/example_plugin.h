@@ -19,6 +19,7 @@
 #define __included_example_plugin_h__
 
 #include <vnet/vnet.h>
+#include <vnet/ip/ip4_packet.h>
 
 typedef struct {
     /* API message ID base */
@@ -27,6 +28,10 @@ typedef struct {
     /* convenience */
     vlib_main_t * vlib_main;
     vnet_main_t * vnet_main;
+
+    u8* str;
+    u8 ip_addr_set;
+    ip4_address_t ip_addr;
 } example_plugin_main_t;
 
 extern example_plugin_main_t example_plugin_main;
