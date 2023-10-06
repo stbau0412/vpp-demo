@@ -27,14 +27,13 @@ example_plugin_main_t example_plugin_main;
 /* Action function shared between message handler and debug CLI */
 
 static clib_error_t *
-example_plugin_command_fn (vlib_main_t * vm,
+example_plugin_configure_command_fn (vlib_main_t * vm,
                                    unformat_input_t * input,
                                    vlib_cli_command_t * cmd)
 {
     u8* str;
     u8 ip_addr_set = 0;
     ip4_address_t ip_addr;
-    u8* result;
 
     if (!unformat (input, "%s", &str))
         return clib_error_return (0, "Syntax error");
@@ -49,21 +48,72 @@ example_plugin_command_fn (vlib_main_t * vm,
     example_plugin_main.ip_addr_set = ip_addr_set;
     example_plugin_main.ip_addr = ip_addr;
 
-    result = format(0, "Hello world! (%s)", str);
-    if (ip_addr_set)
-        result = format(result, " %U", format_ip4_address, &ip_addr);
-    vlib_cli_output (vm, (char*)result);
+    vlib_cli_output (vm, "Configuration set");
     return 0;
 }
 
+
+static clib_error_t *
+example_plugin_enable_disable_command_fn (vlib_main_t * vm,
+                                     unformat_input_t * input,
+                                     vlib_cli_command_t * cmd)
+{
+    example_plugin_main_t *epm = &example_plugin_main;
+
+    u32 enable_disable = 1;
+    u32 sw_if_index = ~0;
+
+    while (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
+    {
+        if (unformat (input, "disable"))
+            enable_disable = 0;
+        else if (unformat (input, "interface %U", unformat_vnet_sw_interface,
+                           epm->vnet_main, &sw_if_index))
+            ;
+        else
+            return clib_error_return (0, "Syntax error");
+    }
+
+    if (sw_if_index == ~0)
+        return clib_error_return (0, "Syntax error");
+
+    vnet_feature_enable_disable ("ip4-unicast", "example_plugin",
+                                 sw_if_index, enable_disable, 0, 0);
+
+    vlib_cli_output (vm, "Feature enabled/disabled");
+    return 0;
+}
+
+static clib_error_t * example_plugin_init (vlib_main_t * vm)
+{
+    example_plugin_main_t * emp = &example_plugin_main;
+    emp->vlib_main = vm;
+    emp->vnet_main = vnet_get_main();
+
+    return 0;
+}
+
+VLIB_INIT_FUNCTION (example_plugin_init);
+
+/* *INDENT-OFF* */
+VLIB_CLI_COMMAND (example_plugin_configure_command, static) =
+    {
+      .path = "example_plugin configure",
+      .short_help =
+      "example_plugin configure <string> [address <address>]",
+      .function = example_plugin_configure_command_fn,
+    };
+/* *INDENT-ON* */
+
+
 /* *INDENT-OFF* */
 VLIB_CLI_COMMAND (example_plugin_enable_disable_command, static) =
-{
-  .path = "example_plugin cmd",
-  .short_help =
-  "example_plugin cmd <string> [address <address>]",
-  .function = example_plugin_command_fn,
-};
+    {
+        .path = "example_plugin enable-disable",
+        .short_help =
+        "example_plugin enable-disable interface <interface> [disable]",
+        .function = example_plugin_enable_disable_command_fn,
+    };
 /* *INDENT-ON* */
 
 /* *INDENT-OFF* */

@@ -16,4 +16,5 @@ add_vpp_plugin(example_plugin
   SOURCES
   example_plugin.c
   example_plugin.h
+  example_feature.c
 )
