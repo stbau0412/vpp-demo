@@ -31,6 +31,8 @@ example_plugin_configure_command_fn (vlib_main_t * vm,
                                    unformat_input_t * input,
                                    vlib_cli_command_t * cmd)
 {
+    example_plugin_main_t *epm = &example_plugin_main;
+
     u8* str;
     u8 ip_addr_set = 0;
     ip4_address_t ip_addr;
@@ -44,9 +46,9 @@ example_plugin_configure_command_fn (vlib_main_t * vm,
     if (unformat_check_input (input) != UNFORMAT_END_OF_INPUT)
         return clib_error_return (0, "Syntax error");
 
-    example_plugin_main.str = str;
-    example_plugin_main.ip_addr_set = ip_addr_set;
-    example_plugin_main.ip_addr = ip_addr;
+    epm->str = str;
+    epm->ip_addr_set = ip_addr_set;
+    epm->ip_addr = ip_addr;
 
     vlib_cli_output (vm, "Configuration set");
     return 0;
@@ -104,7 +106,6 @@ VLIB_CLI_COMMAND (example_plugin_configure_command, static) =
       .function = example_plugin_configure_command_fn,
     };
 /* *INDENT-ON* */
-
 
 /* *INDENT-OFF* */
 VLIB_CLI_COMMAND (example_plugin_enable_disable_command, static) =

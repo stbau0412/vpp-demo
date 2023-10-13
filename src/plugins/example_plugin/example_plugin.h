@@ -22,9 +22,6 @@
 #include <vnet/ip/ip4_packet.h>
 
 typedef struct {
-    /* API message ID base */
-    u16 msg_id_base;
-
     /* convenience */
     vlib_main_t * vlib_main;
     vnet_main_t * vnet_main;
